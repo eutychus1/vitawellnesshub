@@ -70,7 +70,6 @@ Optional: Supabase Storage for images (food icons, PDFs)
 
 3) Database (MySQL)
 
-Supabase → Auth (JWT) & Storage for media/certificates. Keep core data in MySQL; store Supabase user.id in your users.supabase_uid to link.
 
 Cursor AI → Refactor and implement features fast inside the editor.
 
