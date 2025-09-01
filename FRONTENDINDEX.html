@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VitaWellnessHUB</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mgx-cursor"></script>
+  <script src="https://cdn.bolt.new/bolt.js"></script>
+  <script src="app.js" defer></script>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(120deg, #f6f9fc, #e0f7fa);
+      margin: 0; padding: 0; color: #333;
+      scroll-behavior: smooth;
+    }
+    h1, h2 { text-align: center; color: #2e7d32; }
+    section {
+      margin: 40px auto; padding: 30px; max-width: 1000px;
+      background: #ffffffcc; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      transition: transform 0.3s;
+    }
+    section:hover { transform: translateY(-5px); }
+    p { line-height: 1.7; text-align: justify; }
+    input, select, button {
+      padding: 8px; margin: 6px 0; border-radius: 10px; border: 1px solid #4caf50; outline: none; font-size: 1rem;
+    }
+    button {
+      background: linear-gradient(45deg,#ff8a65,#ffb74d);
+      color: white; border: none; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.3); }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+    th { background-color: #81c784; color: #fff; border-radius: 8px; }
+    .meal-breakfast { background:#fff3e0; }
+    .meal-lunch { background:#e8f5e9; }
+    .meal-dinner { background:#e3f2fd; }
+    .meal-snack { background:#fce4ec; }
+    .category-tag { display:inline-block; padding:2px 8px; border-radius:12px; background:#4caf50; color:white; font-size:0.85rem; margin-right:5px; }
+    ul { list-style-type:none; padding-left:0; }
+    li { margin-bottom:10px; padding:10px; border-left:4px solid #4caf50; background:#f1f8e9; border-radius:10px; }
+  </style>
+</head>
+<body>
+  <h1>VitaWellnessHUB</h1>
+
+  <!-- Favorite Stadium and Sport -->
+  <section>
+    <h2>⚽ Select Your Favorite Sport & Stadium</h2>
+    <label for="sportSelect">Choose Sport:</label>
+    <select id="sportSelect">
+      <option value="">--Select Sport--</option>
+    </select>
+    <label for="stadiumSelect">Choose Stadium:</label>
+    <select id="stadiumSelect">
+      <option value="">--Select Stadium--</option>
+    </select>
+    <button id="selectPreferencesBtn">Confirm Preferences</button>
+    <p id="selectedPrefs"></p>
+  </section>
+
+  <!-- Meal Plan Section -->
+  <section>
+    <h2>🥗 Meal Plan</h2>
+    <label for="meal-date">Select a date:</label>
+    <input type="date" id="meal-date">
+    <button id="suggestBtn">Suggest Meals via AI</button>
+    <table id="plan">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Meal</th>
+          <th>Food</th>
+          <th>Servings</th>
+          <th>kCal</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <p><strong>Total Calories:</strong> <span id="totalCalories">0</span> kCal</p>
+  </section>
+
+  <!-- Add Meal Section -->
+  <section>
+    <h2>Add Meal</h2>
+    <form id="mealForm">
+      User ID: <input type="number" name="user_id" required><br>
+      Date: <input type="date" name="meal_date" required><br>
+      Meal Category:
+      <select name="meal_category" required>
+        <option value="">--Select Category--</option>
+        <option value="Breakfast">Breakfast</option>
+        <option value="Lunch">Lunch</option>
+        <option value="Dinner">Dinner</option>
+        <option value="Snack">Snack</option>
+      </select><br>
+      Food Name: <input type="text" name="food_name" required><br>
+      Servings: <input type="number" name="servings" required><br>
+      kCal: <input type="number" name="kcal" required><br>
+      <button type="submit">Add Meal</button>
+    </form>
+  </section>
+
+  <!-- Courses Section -->
+  <section>
+    <h2>📚 Courses</h2>
+    <div id="courses"></div>
+  </section>
+
+  <!-- Add Course Section -->
+  <section>
+    <h2>Add Course</h2>
+    <form id="courseForm">
+      Title: <input type="text" name="title" required><br>
+      Summary: <input type="text" name="summary" required><br>
+      Course Category:
+      <select name="course_category" required>
+        <option value="">--Select Category--</option>
+        <option value="Nutrition">Nutrition</option>
+        <option value="Exercise">Exercise</option>
+        <option value="Mindfulness">Mindfulness</option>
+        <option value="Wellness Tips">Wellness Tips</option>
+      </select><br>
+      Level: <input type="text" name="level" required><br>
+      <button type="submit">Add Course</button>
+    </form>
+  </section>
+
+  <!-- Wellness Topics Section -->
+  <section>
+    <h2>Mental Health & Mindfulness</h2>
+    <p>Mental health is essential for overall wellness. Practicing mindfulness through meditation, breathing exercises, and journaling helps reduce stress and improve focus. Over time, it enhances emotional resilience and cognitive clarity, supporting decision-making and daily productivity. Setting aside even 10-15 minutes per day can lead to noticeable improvements in mood and stress management. Pairing mindfulness with physical activity, proper nutrition, and social connection fosters a holistic wellness lifestyle that is sustainable and deeply beneficial.</p>
+  </section>
+
+  <section>
+    <h2>Nutrition & Balanced Diet</h2>
+    <p>A balanced diet provides essential nutrients, energy, and supports overall health. Including whole grains, vegetables, fruits, lean proteins, and healthy fats ensures proper bodily functions, enhances immunity, and maintains healthy weight. Planning meals ahead, monitoring portion sizes, and combining macronutrients effectively improves digestion, energy levels, and focus. Avoiding excessive processed foods, added sugars, and unhealthy fats helps prevent chronic conditions. A mindful approach to eating, coupled with hydration and nutrient-rich choices, promotes long-term wellness and vitality.</p>
+  </section>
+
+  <section>
+    <h2>Exercise & Physical Activity</h2>
+    <p>Regular physical activity improves cardiovascular health, muscular strength, flexibility, and mental well-being. Combining aerobic exercises with strength training ensures a full-body workout while reducing injury risk. Incorporating stretching, mobility work, and recovery periods enhances performance and overall functionality. Daily movement, even in short intervals, helps maintain healthy body weight, improves mood through endorphin release, and supports metabolic health. Establishing an exercise routine tailored to individual preferences and abilities increases adherence and long-term health benefits.</p>
+  </section>
+
+  <section>
+    <h2>Sleep & Recovery</h2>
+    <p>Quality sleep is vital for cognitive performance, emotional stability, and physical recovery. Maintaining a consistent sleep schedule, creating a calm environment, and limiting screen time before bed improves restfulness. Deep sleep supports memory consolidation, hormonal balance, and tissue repair. Poor sleep negatively impacts mood, concentration, and immune function. Combining proper sleep hygiene with nutrition, hydration, and stress management ensures optimal recovery and prepares the body and mind for daily demands. Prioritizing rest is a key pillar of wellness.</p>
+  </section>
+
+  <section>
+    <h2>Hydration & Wellness</h2>
+    <p>Proper hydration is crucial for bodily functions including digestion, circulation, temperature regulation, and cognitive performance. Drinking adequate water throughout the day prevents dehydration, fatigue, and headaches. Including hydrating foods like fruits and vegetables contributes to fluid balance. Monitoring urine color and adjusting fluid intake according to activity level and environment ensures optimal hydration. Maintaining hydration supports energy, skin health, and nutrient transport. Combined with balanced nutrition and physical activity, hydration is a cornerstone of overall wellness.</p>
+  </section>
+
+  <script>
+    MGXCursor.init({ size: 30, color: "#FF4500", trail: true });
+    const bolt = new Bolt();
+    bolt.watch("#plan");
+    bolt.watch("#courses");
+  </script>
+</body>
+</html>
