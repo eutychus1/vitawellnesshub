@@ -129,5 +129,11 @@ async def read_root(request: Request):
 @app.get("/api/hello")
 async def hello():
     return {"message": "Welcome to VitaWellnessHUB API"}
+    /templates
+   └── frontendindex.html   (rename to index.html)
+/static
+   ├── styles.css
+   └── app.js
+
 
 # Connect to MySQL
