@@ -1,18 +1,19 @@
 from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 import mysql.connector
-import os
 from dotenv import load_dotenv
+import os
+import random
 
-# Load environment variables (.env file in project root)
+# Load environment variables
 load_dotenv()
 
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_USER = os.getenv("DB_USER", "root")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "your_password")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 DB_NAME = os.getenv("DB_NAME", "vitawellnessub")
 
 # Initialize FastAPI
@@ -26,10 +27,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Serve static files (CSS, JS, images)
+# Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Point to templates folder
+# Setup templates
 templates = Jinja2Templates(directory="templates")
 
 # Database connection
@@ -41,7 +42,7 @@ def get_db():
         database=DB_NAME
     )
 
-# ---------------- ROUTES ----------------
+# ------------------- ROUTES -------------------
 
 @app.get("/", response_class=HTMLResponse)
 async def serve_home(request: Request):
@@ -49,7 +50,7 @@ async def serve_home(request: Request):
 
 @app.get("/api/ping")
 def ping():
-    return {"message": "Backend is running 🚀"}
+    return {"message": "Backend is running on Railway!"}
 
 # Fetch all courses
 @app.get("/courses")
@@ -80,7 +81,7 @@ def add_meal(meal: dict):
     cursor = db.cursor()
     sql = """
         INSERT INTO meals (user_id, meal_date, meal_category, meal_type, food_name, servings, kcal)
-        VALUES (%s,%s,%s,%s,%s,%s,%s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
     """
     values = (
         meal['user_id'],
@@ -102,7 +103,7 @@ def add_meal(meal: dict):
 def add_course(course: dict):
     db = get_db()
     cursor = db.cursor()
-    sql = "INSERT INTO courses (title, summary, course_category, level) VALUES (%s,%s,%s,%s)"
+    sql = "INSERT INTO courses (title, summary, course_category, level) VALUES (%s, %s, %s, %s)"
     values = (course['title'], course['summary'], course['course_category'], course['level'])
     cursor.execute(sql, values)
     db.commit()
@@ -110,7 +111,7 @@ def add_course(course: dict):
     db.close()
     return {"message": "Course added successfully!"}
 
-# Suggest meals
+# Suggest meals (random from DB)
 @app.get("/suggest_meal/")
 def suggest_meal(user_id: int, meal_date: str):
     db = get_db()
