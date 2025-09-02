@@ -1,11 +1,24 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 import mysql.connector
-import random
+import os
+from dotenv import load_dotenv
 
+# Load environment variables (.env file in project root)
+load_dotenv()
+
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_USER = os.getenv("DB_USER", "root")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "your_password")
+DB_NAME = os.getenv("DB_NAME", "vitawellnessub")
+
+# Initialize FastAPI
 app = FastAPI()
 
-# Enable CORS for frontend
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -13,14 +26,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Connect to MySQL
+# Serve static files (CSS, JS, images)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Point to templates folder
+templates = Jinja2Templates(directory="templates")
+
+# Database connection
 def get_db():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="your_password",
-        database="vitawellnessub"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
+
+# ---------------- ROUTES ----------------
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/api/ping")
+def ping():
+    return {"message": "Backend is running 🚀"}
 
 # Fetch all courses
 @app.get("/courses")
@@ -49,7 +78,10 @@ def meal_plan(selected_date: str):
 def add_meal(meal: dict):
     db = get_db()
     cursor = db.cursor()
-    sql = "INSERT INTO meals (user_id, meal_date, meal_category, meal_type, food_name, servings, kcal) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+    sql = """
+        INSERT INTO meals (user_id, meal_date, meal_category, meal_type, food_name, servings, kcal)
+        VALUES (%s,%s,%s,%s,%s,%s,%s)
+    """
     values = (
         meal['user_id'],
         meal['meal_date'],
@@ -78,7 +110,7 @@ def add_course(course: dict):
     db.close()
     return {"message": "Course added successfully!"}
 
-# Suggest meals (AI / random from DB)
+# Suggest meals
 @app.get("/suggest_meal/")
 def suggest_meal(user_id: int, meal_date: str):
     db = get_db()
@@ -90,50 +122,3 @@ def suggest_meal(user_id: int, meal_date: str):
     cursor.close()
     db.close()
     return {"suggestions": meals}
-from dotenv import load_dotenv
-import os
-import mysql.connector
-
-load_dotenv()  # Load variables from .env
-
-DB_HOST = os.getenv("DB_HOST")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_NAME = os.getenv("DB_NAME")
-
-def get_db():
-    return mysql.connector.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        database=DB_NAME
-    )
-    from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-
-app = FastAPI()
-
-# Mount static files (CSS, JS)
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# Setup templates
-templates = Jinja2Templates(directory="templates")
-
-@app.get("/", response_class=HTMLResponse)
-async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
-# Example API endpoint
-@app.get("/api/hello")
-async def hello():
-    return {"message": "Welcome to VitaWellnessHUB API"}
-    /templates
-   └── frontendindex.html   (rename to index.html)
-/static
-   ├── styles.css
-   └── app.js
-
-
-# Connect to MySQL
