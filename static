@@ -1,2 +1,2 @@
-mkdir static
+
 echo "/* placeholder */" > static/placeholder.css
